@@ -823,29 +823,24 @@ class TestApp(TestWrapper, TestClient):
 
 
 if __name__ == '__main__':
-    print ("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk")
+
     app = TestApp("127.0.0.1", 7497, 10)
 
     ## lets get prices for this
     ibcontract = IBcontract()
-    #ibcontract.secType = "STK"
     ibcontract.secType = "FUT"
     ibcontract.lastTradeDateOrContractMonth="201812"
-    #ibcontract.symbol="TEVA"
     ibcontract.symbol="GE"
-    ibcontract.exchange="SMART"
-    ibcontract.exchange="SMART"
+    ibcontract.exchange="GLOBEX"
 
     ## resolve the contract
     resolved_ibcontract = app.resolve_ib_contract(ibcontract)
 
     order1=Order()
     order1.action="BUY"
-    order1.orderType="LTM"
-    order1.totalQuantity=1
+    order1.orderType="MKT"
+    order1.totalQuantity=7
     order1.transmit = True
-    
-   
 
     orderid1 = app.place_new_IB_order(ibcontract, order1, orderid=None)
 
