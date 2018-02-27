@@ -23,10 +23,6 @@ from ibapi.client import EClient
 from ibapi.contract import Contract as IBcontract
 from ibapi.order import Order
 from ibapi.execution import ExecutionFilter
-from ibapi.order_condition import PriceCondition
-from ibapi.order_condition import OrderCondition
-from ibapi import order_condition
-
 
 import time
 from threading import Thread
@@ -835,8 +831,8 @@ if __name__ == '__main__':
     ibcontract.secType = "STK"
     #ibcontract.secType = "FUT"
     #ibcontract.lastTradeDateOrContractMonth="201812"
-    #ibcontract.symbol="TEVA"
-    ibcontract.symbol="GE"
+    ibcontract.symbol="TEVA"
+    #ibcontract.symbol="SPY"
     #ibcontract.symbol="GE"
     ibcontract.exchange="SMART"
     #ibcontract.exchange="GLOBEX"
@@ -844,51 +840,13 @@ if __name__ == '__main__':
     ## resolve the contract
     resolved_ibcontract = app.resolve_ib_contract(ibcontract)
 
-    print ("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk")
-
     order1=Order()
     order1.action="BUY"
     order1.orderType="LMT"
     order1.totalQuantity=1
     order1.lmtPrice = 17
     order1.transmit = True
-    #lmt = OrderSamples.LimitOrder("BUY", 100, 20)
-    # The active order will be cancelled if conditioning criteria is met
-    #order1.conditionsCancelOrder = True
-    #order1.conditions.append(order1.PriceCondition(PriceCondition.TriggerMethodEnum.Last,208813720, "SMART", 600, False, False))
     
-    print ("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk")
-    
-    #Conditions have to be created via the OrderCondition.create 
-    priceCondition = order_condition.Create(OrderCondition.Price)
-    #When this contract...
-    priceCondition.conId = None
-    #traded on this exchange
-    priceCondition.exchange = "SMART"
-    #has a price above/below
-    priceCondition.isMore = True
-    #priceCondition.triggerMethod = triggerMethod
-    #this quantity
-    priceCondition.price = 17
-    #AND | OR next condition (will be ignored if no more conditions are added)
-    priceCondition.isConjunctionConnection = True
-
-
-
-    #lmt = OrderSamples.LimitOrder("BUY", 100, 20)
-    # The active order will be cancelled if conditioning criteria is met
-    order1.conditionsCancelOrder = True
-    order1.conditions.append(
-            PriceCondition(PriceCondition.TriggerMethodEnum.Last,
-          208813720, "SMART", 600))
-    #self.placeOrder(self.nextOrderId(), ContractSamples.EuropeanStock(), lmt)
-
-    
-    
-    
-    
-    
-    #self.placeOrder(self.nextOrderId(), ContractSamples.EuropeanStock(), lmt)
    
 
     orderid1 = app.place_new_IB_order(ibcontract, order1, orderid=None)

@@ -26,7 +26,7 @@ from ibapi.execution import ExecutionFilter
 from ibapi.order_condition import PriceCondition
 from ibapi.order_condition import OrderCondition
 from ibapi import order_condition
-
+from ibapi.tag_value import TagValue
 
 import time
 from threading import Thread
@@ -829,69 +829,49 @@ class TestApp(TestWrapper, TestClient):
 if __name__ == '__main__':
     print ("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk")
     app = TestApp("127.0.0.1", 7497, 10)
-
-    ## lets get prices for this
+#####################################################################################3
     ibcontract = IBcontract()
-    ibcontract.secType = "STK"
-    #ibcontract.secType = "FUT"
-    #ibcontract.lastTradeDateOrContractMonth="201812"
-    #ibcontract.symbol="TEVA"
-    ibcontract.symbol="GE"
-    #ibcontract.symbol="GE"
-    ibcontract.exchange="SMART"
-    #ibcontract.exchange="GLOBEX"
+    ibcontract.symbol = "AMD"
+    ibcontract.secType = "OPT"
+    ibcontract.exchange = "SMART"
+    ibcontract.currency = "USD"
+    ibcontract.lastTradeDateOrContractMonth = "20180318"
+    ibcontract.strike = 13.5
+    ibcontract.right = "C"
+    ibcontract.multiplier = "100"
 
-    ## resolve the contract
     resolved_ibcontract = app.resolve_ib_contract(ibcontract)
+    print(resolved_ibcontract)
 
-    print ("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk")
+    conContract = IBcontract()
+    conContract.symbol = "AMD"
+    conContract.secType = "STK"
+    conContract.exchange = "SMART"
+    conContract.currency = "USD"
 
-    order1=Order()
-    order1.action="BUY"
-    order1.orderType="LMT"
-    order1.totalQuantity=1
-    order1.lmtPrice = 17
-    order1.transmit = True
-    #lmt = OrderSamples.LimitOrder("BUY", 100, 20)
-    # The active order will be cancelled if conditioning criteria is met
-    #order1.conditionsCancelOrder = True
-    #order1.conditions.append(order1.PriceCondition(PriceCondition.TriggerMethodEnum.Last,208813720, "SMART", 600, False, False))
-    
-    print ("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk")
-    
-    #Conditions have to be created via the OrderCondition.create 
-    priceCondition = order_condition.Create(OrderCondition.Price)
-    #When this contract...
-    priceCondition.conId = None
-    #traded on this exchange
-    priceCondition.exchange = "SMART"
-    #has a price above/below
-    priceCondition.isMore = True
-    #priceCondition.triggerMethod = triggerMethod
-    #this quantity
-    priceCondition.price = 17
-    #AND | OR next condition (will be ignored if no more conditions are added)
-    priceCondition.isConjunctionConnection = True
+    resolved_conContract = app.resolve_ib_contract(conContract)
+    print(resolved_conContract)
+    print(resolved_conContract.conId)
 
+    algoParams = []
+    algoParams.append(TagValue("adaptivePriority", "Normal"))
+    print(algoParams)
 
+    conParams = []
+    conParams.append(PriceCondition(0, resolved_conContract.conId, "SMART", 10.0))
+    print(conParams)
 
-    #lmt = OrderSamples.LimitOrder("BUY", 100, 20)
-    # The active order will be cancelled if conditioning criteria is met
-    order1.conditionsCancelOrder = True
-    order1.conditions.append(
-            PriceCondition(PriceCondition.TriggerMethodEnum.Last,
-          208813720, "SMART", 600))
-    #self.placeOrder(self.nextOrderId(), ContractSamples.EuropeanStock(), lmt)
+    order=Order()
+    order.action="BUY"
+    order.orderType="MKT"
+    order.totalQuantity=1
+    order.algoStrategy = 'Adaptive'
+    order.algoParams = algoParams
+    order.conditions = conParams
+    order.transmit = True
+   #############################################################################3   
 
-    
-    
-    
-    
-    
-    #self.placeOrder(self.nextOrderId(), ContractSamples.EuropeanStock(), lmt)
-   
-
-    orderid1 = app.place_new_IB_order(ibcontract, order1, orderid=None)
+    orderid1 = app.place_new_IB_order(ibcontract, order, orderid=None)
 
     print("Placed market order, orderid is %d" % orderid1)
 
