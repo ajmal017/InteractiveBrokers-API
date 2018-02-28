@@ -27,7 +27,7 @@ from ibapi.order_condition import PriceCondition
 from ibapi.order_condition import OrderCondition
 from ibapi import order_condition
 from ibapi.tag_value import TagValue
-
+from ibapi import order_condition
 import time
 from threading import Thread
 import queue
@@ -831,43 +831,41 @@ if __name__ == '__main__':
     app = TestApp("127.0.0.1", 7497, 10)
 #####################################################################################3
     ibcontract = IBcontract()
-    ibcontract.symbol = "AMD"
-    ibcontract.secType = "OPT"
+    ibcontract.symbol = "TEVA"
+    ibcontract.secType = "STK"
     ibcontract.exchange = "SMART"
-    ibcontract.currency = "USD"
-    ibcontract.lastTradeDateOrContractMonth = "20180318"
-    ibcontract.strike = 13.5
-    ibcontract.right = "C"
-    ibcontract.multiplier = "100"
 
     resolved_ibcontract = app.resolve_ib_contract(ibcontract)
     print(resolved_ibcontract)
 
     conContract = IBcontract()
-    conContract.symbol = "AMD"
+    conContract.symbol = "SPY"
     conContract.secType = "STK"
     conContract.exchange = "SMART"
-    conContract.currency = "USD"
 
     resolved_conContract = app.resolve_ib_contract(conContract)
+
     print(resolved_conContract)
     print(resolved_conContract.conId)
 
-    algoParams = []
-    algoParams.append(TagValue("adaptivePriority", "Normal"))
-    print(algoParams)
+    #Conditions have to be created via the OrderCondition.create 
+    priceCondition = order_condition.Create(OrderCondition.Price)
+    priceCondition.conId = resolved_conContract.conId
+    #has a price above/below
+    priceCondition.isMore = True
+    priceCondition.triggerMethod = PriceCondition.TriggerMethodEnum.Last
+    priceCondition.price = 150
 
-    conParams = []
-    conParams.append(PriceCondition(0, resolved_conContract.conId, "SMART", 10.0))
-    print(conParams)
 
     order=Order()
     order.action="BUY"
-    order.orderType="MKT"
+    order.orderType="LMT"
     order.totalQuantity=1
-    order.algoStrategy = 'Adaptive'
-    order.algoParams = algoParams
-    order.conditions = conParams
+    order.lmtPrice = 17
+    order.conditionsCancelOrder = True
+    #order.conditions.append(priceCondition)
+    order.conditions.append(PriceCondition(PriceCondition.TriggerMethodEnum.Last,)
+    #order.conditions = priceCondition
     order.transmit = True
    #############################################################################3   
 
