@@ -607,11 +607,13 @@ class TestClient(EClient):
         ##   in which case IB will break
 
         # Place the order
+        print("-------------------")
         self.placeOrder(
             orderid,  # orderId,
             ibcontract,  # contract,
             order  # order
         )
+        print("-------------------")
 
         return orderid
 
@@ -841,7 +843,8 @@ if __name__ == '__main__':
     conContract = IBcontract()
     conContract.symbol = "SPY"
     conContract.secType = "STK"
-    conContract.exchange = "SMART"
+    #conContract.exchange = "SMART"
+    conContract.exchange = "BATS"
 
     resolved_conContract = app.resolve_ib_contract(conContract)
 
@@ -864,10 +867,10 @@ if __name__ == '__main__':
     order.lmtPrice = 17
     order.conditionsCancelOrder = True
     #order.conditions.append(priceCondition)
-    order.conditions.append(PriceCondition(PriceCondition.TriggerMethodEnum.Last,)
+    order.conditions.append(priceCondition)
     #order.conditions = priceCondition
     order.transmit = True
-   #############################################################################3   
+   #############################################################################   
 
     orderid1 = app.place_new_IB_order(ibcontract, order, orderid=None)
 
